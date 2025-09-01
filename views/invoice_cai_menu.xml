@@ -1,0 +1,6 @@
+<?xml version="1.0" ?>
+<odoo>
+  <menuitem id="invoice_cai_root_menu" name="Invoice CAI">
+      <menuitem id="invoice_cai_model_menu_action" action="account_invoice_cai_action" />
+  </menuitem>
+</odoo>
