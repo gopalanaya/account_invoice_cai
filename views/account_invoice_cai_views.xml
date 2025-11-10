@@ -1,5 +1,17 @@
 <?xml version="1.0" ?>
 <odoo>
+
+  <!-- Company Restricted Rule for CAI -->
+  <!-- Company Restricted Rule for CAI -->
+  <record id="account_invoice_cai_restricted_rul" model="ir.rule">
+     <field name="name"> Restricted Record: Multi-Company </field>
+     <field name="model_id" ref="model_account_invoice_cai" />
+     <field name="global" eval="True"/>
+     <field name="domain_force">
+        [('company_id', 'in', company_ids)]
+     </field>
+  </record>
+
   <record id="account_invoice_cai_view_tree" model="ir.ui.view">
     <field name="name">account.invoice.cai.tree</field>
     <field name="model">account.invoice.cai</field>
@@ -9,6 +21,7 @@
         <field name="cai_range_start" />
         <field name="cai_range_end" />
         <field name="cai_expiry"/>
+        <field name="company_id" />
       </tree>
     </field>
   </record>

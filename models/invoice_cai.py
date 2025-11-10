@@ -5,6 +5,7 @@ from datetime import date
 class InvoiceCAI(models.Model):
     _name = "account.invoice.cai"
     _description = "CAI Management and Configuration Wizard"
+    _check_company_auto = True
 
     cai_code = fields.Char('CAI', required=True, company_dependent=True)
     cai_range_start= fields.Char("Rango Inicio", required=True)
@@ -15,33 +16,38 @@ class InvoiceCAI(models.Model):
   
     def apply_cai_config(self):
         company = self.env.company
-        company.write({
-            'cai_code': self.cai_code,
-            'cai_range_start': self.cai_range_start,
-            'cai_range_end': self.cai_range_end,
-            'cai_expiry': self.cai_expiry,
-        })
+        for cai in self:
+            company.write({
+                'cai_code': cai.cai_code,
+                'cai_range_start': cai.cai_range_start,
+                'cai_range_end': cai.cai_range_end,
+                'cai_expiry': cai.cai_expiry,
+            })
+            
 
-        sequence = self.env.ref('account_invoice_cai.seq_invoice_custom')
-        prefix = '-'.join(self.cai_range_start.split('-')[:3]) + '-'
-        start_num = int(self.cai_range_start.split('-')[-1])
-        sequence.write({
-            'prefix': prefix,
-            'number_next': start_num,
-        })
+            sequence = self.env.ref('account_invoice_cai.seq_invoice_custom')
+            prefix = '-'.join(cai.cai_range_start.split('-')[:3]) + '-'
+            start_num = int(cai.cai_range_start.split('-')[-1])
+            sequence.write({
+                'prefix': prefix,
+                'number_next': start_num,
+            })
+        
+        self.env.cr.commit()
 
     
     @api.model
     def create(self, vals):
-        company = self.env['res.company'].browse(vals.get('company_id') or self.env.company.id)
+        company = self.env.company
         today = date.today()
 
         if company.cai_code and company.cai_expiry and company.cai_expiry >= today:
-            raise ValidationError(_("This company already has an active CAI until %s.") % company.cai_expiry)
+            raise ValidationError(_("This company already has an active CAI until %s.  %s") % (company.cai_expiry, company))
 
         record = super().create(vals)
         # Update record      
-        self.apply_cai_config()
+        record.apply_cai_config()
+
         return record
 
     

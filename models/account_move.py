@@ -20,6 +20,26 @@ class AccountMove(models.Model):
     )
 
 
+    @api.model
+    def default_get(self, fields):
+        self = self.with_company(self.company_id)
+        res = super().default_get(fields)
+
+        company = self.env.company
+        cai_code = company.cai_code
+        cai_expiry = company.cai_expiry  # Assuming this is a Date field
+
+        # Check if CAI code is missing or expired
+        if not cai_code or (cai_expiry and cai_expiry < date.today()):
+            raise exceptions.RedirectWarning(
+                _('No CAI is present or active. Create New One using Button Below'),
+                'account_invoice_cai.action_cai_configurator', _('New CAI'))
+
+
+        return res
+    
+
+
     @api.depends('name', 'company_id.cai_range_start')
     def _compute_factura_preview(self):
         for move in self:

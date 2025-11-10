@@ -61,13 +61,7 @@
     </div>
   </t>
 </template>
-<report
-  id="action_report_invoice_cai"
-  model="account.move"
-  string="CAI Invoice"
-  report_type="qweb-pdf"
-  name="account_invoice_cai.report_invoice_cai"
-/>
+
 
 <template id="report_invoice_document_cai" inherit_id="account.report_invoice_document">
   <xpath expr="//div[@class='row']" position="inside">
