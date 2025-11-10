@@ -1,91 +1,55 @@
-from odoo import models, fields, api, exceptions
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 from datetime import date
 
 class InvoiceCAI(models.Model):
     _name = "account.invoice.cai"
-    _description = "CAI Management"
+    _description = "CAI Management and Configuration Wizard"
 
-    _rec_name = 'cai'
-    _check_company_auto = True
+    cai_code = fields.Char('CAI', required=True, company_dependent=True)
+    cai_range_start= fields.Char("Rango Inicio", required=True)
+    cai_range_end = fields.Char('Rango Fin', required=True)
+    cai_expiry = fields.Date('Fecha Límite Emisión', required=True)
+    company_id = fields.Many2one('res.company', string="Company", required=True, default=lambda self: self.env.company)
+    invoice_ids = fields.One2many('account.move', 'cai_id', string="Invoices")
+  
+    def apply_cai_config(self):
+        company = self.env.company
+        company.write({
+            'cai_code': self.cai_code,
+            'cai_range_start': self.cai_range_start,
+            'cai_range_end': self.cai_range_end,
+            'cai_expiry': self.cai_expiry,
+        })
 
-    cai = fields.Char('CAI', required=True, copy=False, company_dependent=True)
-    rango= fields.Char(required=True, copy=False)
-    al = fields.Char('-', required=True, copy=False)
-    fecha_limite = fields.Date('Fecha limite emision', default=fields.Date.today, copy=False)
-    is_active = fields.Boolean('Is Active?')
-    company_id = fields.Many2one(
-        'res.company', required=True, default=lambda self: self.env.company
-    )
+        sequence = self.env.ref('account_invoice_cai.seq_invoice_custom')
+        prefix = '-'.join(self.cai_range_start.split('-')[:3]) + '-'
+        start_num = int(self.cai_range_start.split('-')[-1])
+        sequence.write({
+            'prefix': prefix,
+            'number_next': start_num,
+        })
 
-    start = fields.Integer(copy=False, readonly=True, compute='_compute_sequence')
-    end = fields.Integer(copy=False, readonly=True)
-    next_val = fields.Integer(copy=False, readonly=True)
-    padding = fields.Integer(copy=False, readonly=True)
-    prefix = fields.Char(copy=False, readonly=True)
-
-    invoice_ids = fields.One2many('account.move', 'invoice_cai_id', string="CAI Numbers")
-          
-
-    @api.constrains('is_active')
-    def _check_is_active(self):
-        self = self.with_company(self.company_id)
-        self.env.cr.execute('SELECT COUNT(*) FROM account_invoice_cai WHERE is_active=TRUE and company_id=%s',(self.env.company.id,))
-        count = self.env.cr.fetchone()[0]
-        # Upto here we know database is not written, so need to check first
-        if self.is_active:
-            count += 1
-        else:
-            count -= 1
-        
-        if count > 1:
-            raise exceptions.UserError('Only Once CAI can be active at a time')
-        
-        return True
     
+    @api.model
+    def create(self, vals):
+        company = self.env['res.company'].browse(vals.get('company_id') or self.env.company.id)
+        today = date.today()
 
-    @api.depends('rango', 'al')
-    def _compute_sequence(self):
+        if company.cai_code and company.cai_expiry and company.cai_expiry >= today:
+            raise ValidationError(_("This company already has an active CAI until %s.") % company.cai_expiry)
+
+        record = super().create(vals)
+        # Update record      
+        self.apply_cai_config()
+        return record
+
+    
+    def name_get(self):
+        result = []
         for record in self:
-            record = record.with_company(record.company_id)
-            start = record.rango if record.rango else '0'
-            end = record.al if record.al else '0'
-            prefix = "-".join(start.split('-'))[:-1]
-            record.start = int(start.split('-')[-1])
-            record.end = int(end.split('-')[-1])
-            record.prefix = prefix
-            record.padding = len(start.split('-')[-1])
-            if not record.next_val:
-                record.next_val = record.start
-
-    
-    @api.onchange('fecha_limite')
-    def _onchange_fecha_limite(self):
-        for record in self:
-            if record.fecha_limite > date.today():
-                record.is_active = True
-            else:
-                record.is_active = False
-
-
-    def gen_number(self, next_val):
-        """ generate number based on provided next_val. It first check expiry date and then max_val,
-         
-         if not Okay return Parent creation form"""
-        for record in self:
-            if record.fecha_limite >= date.today():
-                if next_val > record.end:
-                    record.is_active = False
-                else:
-                    # create the number
-                    return record.prefix + '-' + str(next_val).zfill(record.padding)
-          
-            else:
-                record.is_active = False
-
-        # Not able to generate Number so return false
-        return False
-                
-    
-    
+           name = f"CAI {record.cai_code}" if record.cai_code else "CAI"
+           result.append((record.id, name))
+        return result
 
     

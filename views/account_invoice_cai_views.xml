@@ -1,98 +1,53 @@
 <?xml version="1.0" ?>
-<odoo>      
-
-  <!-- Company Restricted Rule for CAI -->
-  <record id="account_invoice_cai_restricted_rul" model="ir.rule">
-     <field name="name"> Restricted Record: Multi-Company </field>
-     <field name="model_id" ref="model_account_invoice_cai" />
-     <field name="global" eval="True"/>
-     <field name="domain_force">
-        [('company_id', 'in', company_ids)]
-     </field>
+<odoo>
+  <record id="account_invoice_cai_view_tree" model="ir.ui.view">
+    <field name="name">account.invoice.cai.tree</field>
+    <field name="model">account.invoice.cai</field>
+    <field name="arch" type="xml">
+      <tree string="CAI Management">
+        <field name="cai_code"/>
+        <field name="cai_range_start" />
+        <field name="cai_range_end" />
+        <field name="cai_expiry"/>
+      </tree>
+    </field>
   </record>
 
-  <!-- Configuration CAI and its validity -->
-    <record id="account_invoice_cai_action" model="ir.actions.act_window">
-      <field name="name">CAIs</field>
-      <field name="res_model">account.invoice.cai</field>
-      <field name="view_mode">tree,form</field>
-      <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">
-           Define a new or Active CAI
-        </p><p>
-           Use this to manage active CAI to attach to Invoice
-        </p>
-      </field>
-    </record>
-    <record id="account_invoice_cai_view_tree" model="ir.ui.view">
-      <field name="name">account.invoice.cai.tree</field>
-      <field name="model">account.invoice.cai</field>
-      <field name="arch" type="xml">
-        <tree string="CAI List" default_order="id desc">
-          <field name="cai" />
-          <field name="rango" />
-          <field name="al" />
-          <field name="fecha_limite" />
-          <field name="next_val"/>
-          <field name="is_active" />
-        </tree>
-      </field>
-    </record>
-    <record id="account_invoice_cai_view_form" model="ir.ui.view">
-      <field name="name">account.invoice.cai.form</field>
-      <field name="model">account.invoice.cai</field>
-      <field name="arch" type="xml">
-        <form string="CAI Form">
-          <sheet>
-            <group>
+  <record id="account_invoice_cai_view_wizard" model="ir.ui.view">
+    <field name="name">account.invoice.cai.form</field>
+    <field name="model">account.invoice.cai</field>
+    <field name="arch" type="xml">
+      <form string="CAI Configuration Wizard" class="oe_dark">
+        <sheet>
+
+          <group string="Please Fill Below Information">
+            <group colspan="2">
+              <field name="cai_code" string="CAI: " placeholder="XXXXXX-XXXXXX-XXXXXX-XXXXXX-XXXXXX-XX" style="background-color:#f4f4f4;"/>
+            </group>
+            <group col="2">
+              <field name="cai_range_start" string="RANGO: " placeholder="000-000-00-00000000" style="background-color:#f4f4f4;"/>
+              <field name="cai_expiry" string="FETCHA LIMITE: " placeholder="DD/MM/YYYY" style="background-color:#f4f4f4;"/>
             </group>
             <group >
-              <field name="cai" />
+              <field name="cai_range_end" string=" - " placeholder="000-000-00-00000000" style="background-color:#f4f4f4;"/>
             </group>
-            <group>
-               <group>
-                  <field name="rango"/>                
-               </group>
-               <group>
-                <field name="al"/>
-               </group>
-            </group>
-            <group>
-                <field name="fecha_limite"/>
-            </group>
-            <group>
-              <field name="is_active"/>
-            </group>
+          </group>
+          <notebook>
+            <page string="invoices list">
+              <field name="invoice_ids">
+                <tree>
+                  <field name="name"/>
+                  <field name="factura"/>
+                  <field name="invoice_date"/>
+                  <field name="amount_total"/>
+                  <field name="state"/>
+                </tree>
+              </field>
+            </page>
+          </notebook>
+        </sheet>
 
-            <group>
-               <field name="start"/>
-               <field name="end" />
-               <field name="next_val" />
-               <field name="prefix" />
-               <field name="padding" />
-            </group>
-            <notebook>
-               <page string="Generated Numbers">
-                 <field name="invoice_ids">
-                    <tree>
-                        <field name="factura" />
-                    </tree>
-                 </field>
-               </page>
-            </notebook>
-         </sheet>
       </form>
-     </field>
-    </record>       
-
-  <!-- Company Restricted Rule for CAI -->
-  <record id="account_invoice_cai_invoice_restricted_rule" model="ir.rule">
-     <field name="name"> Restricted Record: Multi-Company </field>
-     <field name="model_id" ref="model_account_move" />
-     <field name="global" eval="True"/>
-     <field name="domain_force">
-        [('company_id', 'in', company_ids)]
-     </field>
+    </field>
   </record>
-
 </odoo>

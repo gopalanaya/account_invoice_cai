@@ -1,6 +1,30 @@
 <?xml version="1.0" ?>
 <odoo>
-  <menuitem id="invoice_cai_root_menu" name="Invoice CAI">
-      <menuitem id="invoice_cai_model_menu_action" action="account_invoice_cai_action" />
-  </menuitem>
+    <!-- Root Menu -->
+  <menuitem id="invoice_cai_root_menu"
+            name="CAI Management"
+            sequence="10"/>
+
+  <!-- Action Window -->
+  <record id="action_cai_configurator" model="ir.actions.act_window">
+    <field name="name">Configure CAI</field>
+    <field name="res_model">account.invoice.cai</field>
+    <field name="view_mode">tree,form</field>
+    <field name="target">current</field>
+    <field name="help" type="html">
+      <p class="o_view_nocontent_smiling_face">
+        Create your first CAI configuration
+      </p>
+    </field>
+  </record>
+
+  <!-- Link Action to Menu -->
+  <menuitem id="invoice_cai_configurator_menu"
+            name="Configure CAI"
+            parent="invoice_cai_root_menu"
+            action="action_cai_configurator"
+            sequence="20"/>
+
+
+
 </odoo>

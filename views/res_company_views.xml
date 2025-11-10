@@ -5,21 +5,15 @@
       <field name="model">res.company</field>
       <field name="inherit_id" ref="base.view_company_form" />
       <field name="arch" type="xml">
-      <field name="parent_id" position="after">
-         <field name="rtn" />
-      </field>
+
         <page name="general_info" position="after">
-          <page name="CAIs" >
-            <field name="cai_ids" >
-              <tree string="CAI List" default_order="id desc">
-                <field name="cai" />
-                <field name="rango" />
-                <field name="al" />
-                <field name="fecha_limite" />
-                <field name="next_val"/>
-                <field name="is_active" />
-              </tree>
-            </field>
+          <page name="Current CAI" >
+                <group>
+                  <field name="cai_code" />
+                  <field name="cai_range_start" />
+                  <field name="cai_range_end" />
+                  <field name="cai_expiry" />
+                </group>
           </page>
         </page>
       </field>
