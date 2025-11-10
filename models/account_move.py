@@ -25,7 +25,8 @@ class AccountMove(models.Model):
         for move in self:
             factura,cai, error = move.company_id.get_next_factura_number()
             move.factura_preview = factura or error or 'Unavailable'
-            move.cai_id = cai.id
+            if cai:
+                move.cai_id = cai.id
     
 
     @api.model_create_multi
@@ -33,7 +34,6 @@ class AccountMove(models.Model):
         """ After creating the record we will update the parent next val"""
         # Update the next val of parent
         company = self.env.company
-        today = date.today()
 
         return_to_cai_form = {
                    'type': 'ir.actions.act_window',
