@@ -5,6 +5,7 @@
     'summary': 'SAT Compliance invoice layout with CAI logic',
     'depends': [
         'account',
+        'sale',
     ],
     'data': [
         'data/ir_sequence_data.xml',
@@ -14,6 +15,7 @@
         'views/account_move_views.xml',
         'views/report_invoice.xml',
         'views/invoice_cai_menu.xml',
+        'views/sale_order_view.xml',
     ],
     'application': False,
     'installable': True,

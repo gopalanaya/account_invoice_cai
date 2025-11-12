@@ -10,6 +10,10 @@
        <field name="factura" attrs="{'invisible': [('state', '=', 'draft')]}"/>
        <field name="cai_id"/>
       </xpath>
+
+      <field name="partner_id" position="after">
+          <field name="vat" />
+      </field>
    
    </field>
 </record>

@@ -19,6 +19,8 @@ class AccountMove(models.Model):
         domain="[('company_id', '=', company_id)]"
     )
 
+    vat = fields.Char(string="R.T.N.", related="partner_id.vat")
+
 
     @api.model
     def default_get(self, fields):
