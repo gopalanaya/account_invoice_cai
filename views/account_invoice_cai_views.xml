@@ -46,13 +46,13 @@
             </group>
           </group>
           <notebook>
-            <page string="invoices list">
-              <field name="invoice_ids">
+            <page string="Factura list">
+              <field name="cai_number_ids">
                 <tree>
+                  <field name="id"/>
                   <field name="name"/>
-                  <field name="factura"/>
-                  <field name="invoice_date"/>
-                  <field name="amount_total"/>
+                  <field name="invoice_cai_id"/>
+                  <field name="invoice_id"/>
                   <field name="state"/>
                 </tree>
               </field>

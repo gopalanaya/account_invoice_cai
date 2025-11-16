@@ -13,6 +13,7 @@
                   <field name="cai_range_start" />
                   <field name="cai_range_end" />
                   <field name="cai_expiry" />
+                  <field name="current_cai_number" />
                 </group>
           </page>
         </page>

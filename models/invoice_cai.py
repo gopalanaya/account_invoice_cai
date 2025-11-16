@@ -12,7 +12,7 @@ class InvoiceCAI(models.Model):
     cai_range_end = fields.Char('Rango Fin', required=True)
     cai_expiry = fields.Date('Fecha Límite Emisión', required=True)
     company_id = fields.Many2one('res.company', string="Company", required=True, default=lambda self: self.env.company)
-    invoice_ids = fields.One2many('account.move', 'cai_id', string="Invoices")
+    cai_number_ids = fields.One2many('account.move.cai', 'invoice_cai_id', string="Factura List")
   
     def apply_cai_config(self):
         company = self.env.company

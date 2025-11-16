@@ -5,10 +5,10 @@
    <field name="model">account.move</field>
    <field name="inherit_id" ref="account.view_move_form" />
    <field name="arch" type="xml">
-     <xpath expr="//field[@name='invoice_date']" position="after">                                                             
+     <xpath expr="//field[@name='invoice_date']" position="after">     
+     <field name="cai_number_id" attrs="{'invisible': [('id', '=', 1)]}" />                                                        
        <field name="factura_preview" attrs="{'invisible': [('state', '=', 'posted')]}"/>
-       <field name="factura" attrs="{'invisible': [('state', '=', 'draft')]}"/>
-       <field name="cai_id"/>
+       <field name="cai_number" attrs="{'invisible': [('state', '=', 'draft')]}"/>
       </xpath>
 
       <field name="partner_id" position="after">

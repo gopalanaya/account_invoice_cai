@@ -65,16 +65,17 @@
 
 <template id="report_invoice_document_cai" inherit_id="account.report_invoice_document">
   <xpath expr="//div[@class='row']" position="inside">
-    <li class="cai_details" t-if="o.cai_id">
-      <p><strong>CAI:</strong> <span t-esc="o.cai_id.cai_code"/></p>
-      <p><strong>CAI Expiration:</strong> <span t-esc="o.cai_id.cai_expiry.strftime('%d-%m-%Y')"/></p>
-      <p><strong>CAI Range:</strong> <span t-esc="o.cai_id.cai_range_start"/> - <span t-esc="o.cai_id.cai_range_end"/></p>
+    <li class="cai_details" t-if="o.cai_number_id">
+      <p><strong>CAI:</strong> <span t-esc="o.cai_code"/></p>
+      <p><strong>CAI Expiration:</strong> <span t-esc="o.cai_expiry.strftime('%d-%m-%Y')"/></p>
+      <p><strong>CAI Range:</strong> <span t-esc="o.cai_range_start"/> - <span t-esc="o.cai_range_end"/></p>
     </li>
   </xpath>
 
   <xpath expr="//div[@class='page']//h2" position="replace">
     <span class="text-center">Factura</span>
-    <span t-esc="o.factura"> </span>
+    <span t-esc="o.factura_preview" attrs="{'invisible':[('state','=','posted')]}"> </span>
+    <span t-esc="o.cai_number" attrs="{'invisible':[('state','=','draft')]}"> </span>
   </xpath>
 </template>
 
